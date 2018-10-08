@@ -2,9 +2,9 @@ package com.midas.myimagesearch.ui.act;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -147,11 +147,13 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                     if(pRes!=null)
                     {
                         if(pRes.meta  != null)
+                        {
                             m_bEnd = pRes.meta.is_end;
-                    }
+                        }
 
-                    m_nPageNum++;
-                    settingView(pRes);
+                        m_nPageNum++;
+                        settingView(pRes);
+                    }
                 }
 
                 @Override

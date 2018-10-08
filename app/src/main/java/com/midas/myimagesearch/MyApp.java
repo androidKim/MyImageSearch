@@ -2,14 +2,14 @@ package com.midas.myimagesearch;
 
 import android.app.Application;
 import android.content.Context;
-
+import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.midas.myimagesearch.core.APIClient;
 import com.midas.myimagesearch.core.APIInterface;
 
@@ -74,5 +74,29 @@ public class MyApp extends Application
         {
             e.printStackTrace();
         }
+    }
+    //------------------------------------------------
+    //
+    public void showMessageDlg(Context pContext, String title, String message)
+    {
+        if(pContext == null || title == null || message == null)
+            return;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(pContext);
+        // Add the buttons
+        builder.setPositiveButton(pContext.getResources().getString(R.string.msg_ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+            }
+        });
+        builder.setNegativeButton(pContext.getResources().getString(R.string.msg_cancel), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+
+        // Create the AlertDialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
