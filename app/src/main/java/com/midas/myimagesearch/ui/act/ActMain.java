@@ -77,7 +77,13 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
 
         m_arrItems = new ArrayList<>();
         m_nPageNum = 1;
-        m_Adapter = null;
+
+        if(m_Adapter!= null)
+        {
+            m_Adapter.removeAllData();
+            m_Adapter = null;
+        }
+
         m_bEnd = false;
 
         runOnUiThread(new Runnable()
@@ -191,11 +197,13 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                             m_nPageNum++;
                             settingView(pRes);
                         }
-                        else
+                        else//검색결과가없을때
                         {
                             String msg = String.format("[%s]\n%s", m_strSearchText, m_Context.getResources().getString(R.string.network_msg_2));
                             m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
                                     msg);
+
+                            initValue();
                         }
                     }
 
@@ -284,22 +292,27 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                 if(m_strSearchText.equals(""))//최초입력..
                 {
                     m_strSearchText = strValue;
-                    runHandler(strValue);
                 }
                 else
                 {
                     if(!strValue.equals(m_strSearchText))//검색어 변경..
                     {
-                        initValue();
                         m_strSearchText = strValue;
-                        runHandler(strValue);
                     }
                     else
                     {
                         m_strSearchText = strValue;
                     }
                 }
+                runHandler(strValue);
             }
+            else
+            {
+                m_strSearchText = "";
+                runHandler(m_strSearchText);
+            }
+
+
         }
     };
     /*********************** callback ***********************/
