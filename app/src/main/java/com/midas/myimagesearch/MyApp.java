@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.midas.myimagesearch.core.APIClient;
 import com.midas.myimagesearch.core.APIInterface;
+import com.midas.myimagesearch.util.NetworkCtrl;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,6 +24,7 @@ public class MyApp extends Application
 
     /******************** Member ********************/
     public APIInterface m_APIInterface = null;
+    public NetworkCtrl m_NetworkCtrl = null;
     public boolean m_bInit = false;
     /******************** Cotroller ********************/
 
@@ -45,6 +47,7 @@ public class MyApp extends Application
             //getKeyHash(pContext);
 
             m_APIInterface = APIClient.getClient().create(APIInterface.class);//web request ctrl
+            m_NetworkCtrl = new NetworkCtrl(pContext);
             m_bInit = true;
         }
     }
@@ -83,18 +86,14 @@ public class MyApp extends Application
             return;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(pContext);
+        builder.setTitle(title);
+        builder.setMessage(message);
         // Add the buttons
         builder.setPositiveButton(pContext.getResources().getString(R.string.msg_ok), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked OK button
             }
         });
-        builder.setNegativeButton(pContext.getResources().getString(R.string.msg_cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-            }
-        });
-
         // Create the AlertDialog
         AlertDialog dialog = builder.create();
         dialog.show();

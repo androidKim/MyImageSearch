@@ -3,6 +3,7 @@ package com.midas.myimagesearch.ui.act;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.midas.myimagesearch.MyApp;
@@ -19,6 +21,7 @@ import com.midas.myimagesearch.structure.ReqBase;
 import com.midas.myimagesearch.structure.function.img_list.res_img_list;
 import com.midas.myimagesearch.structure.img_documents;
 import com.midas.myimagesearch.ui.adapter.RecyclerViewAdapter;
+import com.midas.myimagesearch.util.NetworkCtrl;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -34,14 +37,13 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
     /********************* Member *********************/
     public MyApp m_App = null;
     public Context m_Context = null;
+    public Handler m_Handler = null;
     public RecyclerViewAdapter m_Adapter = null;
     public res_img_list m_ResImageList = null;
-    public Timer m_Timer = null;
     public ArrayList<img_documents> m_arrItems = null;
     public String m_strSearchText = null;//image searchText
     public int m_nPageNum = 1;//pageIndex
     public boolean m_bRunning = false;
-    public boolean m_bOverOneSec = false;//1초사이 새로운검색어 입력 여부
     public boolean m_bEnd = false;
     /********************* Controller *********************/
     public SwipeRefreshLayout m_SwipeRefresh = null;
@@ -58,7 +60,7 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
         m_App = new MyApp(this);
         m_Context = this;
         Fresco.initialize(this);//img library
-        m_Timer = new Timer();
+        m_Handler = new Handler();
         initValue();
         recvIntentData();
         initLayout();
@@ -77,8 +79,16 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
         m_nPageNum = 1;
         m_Adapter = null;
         m_bEnd = false;
-        if(m_RecyclerView != null)
-            m_RecyclerView.removeAllViews();
+
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if(m_RecyclerView != null)
+                    m_RecyclerView.removeAllViews();
+            }
+        });
     }
     //------------------------------------------------------------
     //
@@ -101,68 +111,106 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
         //listener..
         m_SwipeRefresh.setOnRefreshListener(this);
         m_edit_Search.addTextChangedListener(textWatcher);
+    }
+    //------------------------------------------------------------
+    //
+    public void runHandler(final String strValue)
+    {
+        if(m_strSearchText == null || strValue == null)
+            return;
 
-        //setTimer..
-        TimerTask timerTask = new TimerTask()
+        m_Handler.postDelayed(new Runnable()
         {
             @Override
             public void run()
             {
-                if(m_bOverOneSec)//새로운검색어가 입력되었을때..
+                //1초동안 대기하고있던 검색어가 동일하면..
+                if(m_strSearchText.equals(strValue))
                 {
-                    m_bOverOneSec = false;
-                    if(!m_bRunning)
+                    if(!m_bRunning)//검색수행..
                     {
-                        runOnUiThread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                initValue();
-                                getImageListProc();
-                            }
-                        });
+                        initValue();
+                        getImageListProc();
                     }
                 }
             }
-        };
-        m_Timer.schedule(timerTask, 0, 1000);//
+        }, 1000);
     }
+
     //------------------------------------------------------------
     //
     public void getImageListProc()
     {
-        if(!m_bRunning)
+        if(m_App.m_NetworkCtrl.getStatus() == NetworkCtrl.STAT_NOT_CONNECTED)//Network체크
         {
-            m_bRunning = true;
-            Call<res_img_list> call = m_App.m_APIInterface.getImageListProc(m_strSearchText, ReqBase.STR_SEARCH_TYPE_RECENCY, m_nPageNum, ReqBase.ITEM_COUNT);
-            call.enqueue(new Callback<res_img_list>() {
+            runOnUiThread(new Runnable()
+            {
                 @Override
-                public void onResponse(Call<res_img_list> call, Response<res_img_list> response)
+                public void run()
                 {
-                    m_bRunning = false;
-                    Log.d("status code",response.code()+"");
-                    res_img_list pRes = response.body();
-
-                    if(pRes!=null)
-                    {
-                        if(pRes.meta  != null)
-                        {
-                            m_bEnd = pRes.meta.is_end;
-                        }
-
-                        m_nPageNum++;
-                        settingView(pRes);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<res_img_list> call, Throwable t)
-                {
-                    m_bRunning = false;
-                    call.cancel();
+                    Toast.makeText(m_Context, m_Context.getResources().getString(R.string.network_msg_5), Toast.LENGTH_SHORT).show();
+                    return;
                 }
             });
+        }
+        else
+        {
+            if(!m_bRunning)
+            {
+                m_bRunning = true;
+                Call<res_img_list> call = m_App.m_APIInterface.getImageListProc(m_strSearchText, ReqBase.STR_SEARCH_TYPE_RECENCY, m_nPageNum, ReqBase.ITEM_COUNT);
+                call.enqueue(new Callback<res_img_list>() {
+                    @Override
+                    public void onResponse(Call<res_img_list> call, Response<res_img_list> response)
+                    {
+                        m_bRunning = false;
+                        Log.d("status code",response.code()+"");
+                        res_img_list pRes = response.body();
+
+                        if(pRes!=null)
+                        {
+                            if(pRes.meta  != null)
+                            {
+                                m_bEnd = pRes.meta.is_end;
+
+                                if(pRes.meta.total_count <= 0)
+                                {
+                                    String msg = String.format("[%s]\n%s", m_strSearchText, m_Context.getResources().getString(R.string.network_msg_2));
+                                    m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
+                                            msg);
+                                }
+                                else if(pRes.meta.is_end)
+                                {
+                                    String msg = String.format("[%s]\n%s", m_strSearchText, m_Context.getResources().getString(R.string.network_msg_3));
+                                    m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
+                                            msg);
+                                }
+
+                            }
+
+                            m_nPageNum++;
+                            settingView(pRes);
+                        }
+                        else
+                        {
+                            String msg = String.format("[%s]\n%s", m_strSearchText, m_Context.getResources().getString(R.string.network_msg_2));
+                            m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
+                                    msg);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<res_img_list> call, Throwable t)
+                    {
+                        m_bRunning = false;
+                        call.cancel();
+
+                        m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
+                                m_Context.getResources().getString(R.string.network_msg_4));
+                    }
+                });
+            }
+            return;
         }
     }
     //------------------------------------------------------------
@@ -230,26 +278,25 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
         @Override
         public void afterTextChanged(Editable editable)
         {
-            String s = m_edit_Search.getText().toString().trim();
-            if (s.length() > 0)
+            String strValue = m_edit_Search.getText().toString().trim();
+            if (strValue.length() > 0)
             {
                 if(m_strSearchText.equals(""))//최초입력..
                 {
-                    m_strSearchText = s;
-                    m_bOverOneSec = true;
+                    m_strSearchText = strValue;
+                    runHandler(strValue);
                 }
                 else
                 {
-                    if(!s.equals(m_strSearchText))//검색어 변경..
+                    if(!strValue.equals(m_strSearchText))//검색어 변경..
                     {
                         initValue();
-                        m_strSearchText = s;
-                        m_bOverOneSec = true;
+                        m_strSearchText = strValue;
+                        runHandler(strValue);
                     }
                     else
                     {
-                        m_strSearchText = s;
-                        m_bOverOneSec = false;
+                        m_strSearchText = strValue;
                     }
                 }
             }

@@ -4,4 +4,9 @@
     <string name="str_msg_1">검색어를 입력하세요.</string>
     <string name="msg_ok">확인</string>
     <string name="msg_cancel">취소</string>
+    <string name="network_msg_1">조회결과</string>
+    <string name="network_msg_2">해당 검색어에 대한 결과가 없습니다.</string>
+    <string name="network_msg_3">해당 검색어에 대한 결과를 모두 조회하였습니다.</string>
+    <string name="network_msg_4">검색에 실패하였습니다. 잠시 후 다시 시도해주세요.</string>
+    <string name="network_msg_5">네트워크에 연결할 수 없습니다. 와이파이 및 셀룰러 상태 확인 후 다시 시도해주세요.</string>
 </resources>
