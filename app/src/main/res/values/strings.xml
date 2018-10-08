@@ -2,4 +2,6 @@
     <string name="app_name">MyImageSearch</string>
     <string name="kakao_app_key">2aea573eeae8ac8224e16756e4e0f276</string>
     <string name="str_msg_1">검색어를 입력하세요.</string>
+    <string name="msg_ok">확인</string>
+    <string name="msg_cancel">취소</string>
 </resources>
