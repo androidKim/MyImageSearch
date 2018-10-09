@@ -1,5 +1,6 @@
 package com.midas.myimagesearch.ui.act;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
     /********************* Member *********************/
     public MyApp m_App = null;
     public Context m_Context = null;
+    public Activity m_Activity = null;
     public Handler m_Handler = null;
     public RecyclerViewAdapter m_Adapter = null;
     public res_img_list m_ResImageList = null;
@@ -67,6 +69,7 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
         setContentView(R.layout.act_main);
         m_App = new MyApp(this);
         m_Context = this;
+        m_Activity = this;
         Fresco.initialize(this);//img library
         m_Handler = new Handler();
         initValue();
@@ -155,6 +158,9 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                     {
                         initValue();
                         getImageListProc();
+
+                        if(m_App != null)
+                            m_App.hideKeyboard(m_Activity);
                     }
                 }
             }
@@ -237,7 +243,6 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                                 m_Context.getResources().getString(R.string.network_msg_4));
 
                         m_ProgressBar.setVisibility(View.GONE);
-
                     }
                 });
             }
