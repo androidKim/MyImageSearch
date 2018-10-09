@@ -11,7 +11,12 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -31,7 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener
+public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemSelectedListener
 {
     /********************* Define *********************/
     /********************* Member *********************/
@@ -42,13 +47,16 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
     public res_img_list m_ResImageList = null;
     public ArrayList<img_documents> m_arrItems = null;
     public String m_strSearchText = null;//image searchText
+    public String m_strSearchType = ReqBase.STR_SEARCH_TYPE_RECENCY;//deafult 최근순
     public int m_nPageNum = 1;//pageIndex
     public boolean m_bRunning = false;
     public boolean m_bEnd = false;
     /********************* Controller *********************/
+    public Spinner m_Spinner = null;
     public SwipeRefreshLayout m_SwipeRefresh = null;
     public RecyclerView m_RecyclerView = null;
     public EditText m_edit_Search = null;
+    public ProgressBar m_ProgressBar = null;
     /********************* System Function *********************/
     //------------------------------------------------------------
     //
@@ -108,13 +116,23 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
     //
     public void initLayout()
     {
+        m_Spinner = (Spinner)findViewById(R.id.spinner);
         m_SwipeRefresh = (SwipeRefreshLayout)findViewById(R.id.ly_SwipeRefresh);
         m_RecyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         m_edit_Search = (EditText)findViewById(R.id.edit_Search);
+        m_ProgressBar = (ProgressBar)findViewById(R.id.progressBar);
         LinearLayoutManager verticalLayoutManager = new LinearLayoutManager(this);
         m_RecyclerView.setLayoutManager(verticalLayoutManager);
 
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.search_type_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        m_Spinner.setAdapter(adapter);
+
         //listener..
+        m_Spinner.setOnItemSelectedListener(this);
         m_SwipeRefresh.setOnRefreshListener(this);
         m_edit_Search.addTextChangedListener(textWatcher);
     }
@@ -163,8 +181,9 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
         {
             if(!m_bRunning)
             {
+                m_ProgressBar.setVisibility(View.VISIBLE);
                 m_bRunning = true;
-                Call<res_img_list> call = m_App.m_APIInterface.getImageListProc(m_strSearchText, ReqBase.STR_SEARCH_TYPE_RECENCY, m_nPageNum, ReqBase.ITEM_COUNT);
+                Call<res_img_list> call = m_App.m_APIInterface.getImageListProc(m_strSearchText, m_strSearchType, m_nPageNum, ReqBase.ITEM_COUNT);
                 call.enqueue(new Callback<res_img_list>() {
                     @Override
                     public void onResponse(Call<res_img_list> call, Response<res_img_list> response)
@@ -172,7 +191,6 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                         m_bRunning = false;
                         Log.d("status code",response.code()+"");
                         res_img_list pRes = response.body();
-
                         if(pRes!=null)
                         {
                             if(pRes.meta  != null)
@@ -205,6 +223,8 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
 
                             initValue();
                         }
+
+                        m_ProgressBar.setVisibility(View.GONE);
                     }
 
                     @Override
@@ -215,6 +235,9 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
 
                         m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
                                 m_Context.getResources().getString(R.string.network_msg_4));
+
+                        m_ProgressBar.setVisibility(View.GONE);
+
                     }
                 });
             }
@@ -322,5 +345,39 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
     public void onRefresh()
     {
         setRefresh();
+    }
+    //------------------------------------------------------------
+    //spinner callback
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
+    {
+        // An item was selected. You can retrieve the selected item using
+        //String str = (String)adapterView.getItemAtPosition(i);
+        switch (i)
+        {
+            case 0:
+                m_strSearchType = ReqBase.STR_SEARCH_TYPE_RECENCY;
+                break;
+            case 1:
+                m_strSearchType = ReqBase.STR_SEARCH_TYPE_ACCURACY;
+                break;
+            default:
+                m_strSearchType = ReqBase.STR_SEARCH_TYPE_RECENCY;
+                break;
+        }
+
+        if(m_strSearchText != null)
+        {
+            if(m_strSearchText.length() > 0)
+                runHandler(m_strSearchText);
+        }
+    }
+    //------------------------------------------------------------
+    //spinner callback
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView)
+    {
+        // Another interface callback
+        Log.d("","");
     }
 }
