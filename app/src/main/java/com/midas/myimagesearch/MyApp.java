@@ -1,5 +1,6 @@
 package com.midas.myimagesearch;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,9 +10,12 @@ import android.content.pm.Signature;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.midas.myimagesearch.core.APIClient;
 import com.midas.myimagesearch.core.APIInterface;
+import com.midas.myimagesearch.util.NetworkCtrl;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,6 +27,7 @@ public class MyApp extends Application
 
     /******************** Member ********************/
     public APIInterface m_APIInterface = null;
+    public NetworkCtrl m_NetworkCtrl = null;
     public boolean m_bInit = false;
     /******************** Cotroller ********************/
 
@@ -45,8 +50,25 @@ public class MyApp extends Application
             //getKeyHash(pContext);
 
             m_APIInterface = APIClient.getClient().create(APIInterface.class);//web request ctrl
+            m_NetworkCtrl = new NetworkCtrl(pContext);
             m_bInit = true;
         }
+    }
+    //------------------------------------------------
+    //
+    public static void hideKeyboard(Activity activity)
+    {
+        if(activity == null)
+            return;
+
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     //------------------------------------------------
@@ -83,18 +105,14 @@ public class MyApp extends Application
             return;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(pContext);
+        builder.setTitle(title);
+        builder.setMessage(message);
         // Add the buttons
         builder.setPositiveButton(pContext.getResources().getString(R.string.msg_ok), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked OK button
             }
         });
-        builder.setNegativeButton(pContext.getResources().getString(R.string.msg_cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-            }
-        });
-
         // Create the AlertDialog
         AlertDialog dialog = builder.create();
         dialog.show();

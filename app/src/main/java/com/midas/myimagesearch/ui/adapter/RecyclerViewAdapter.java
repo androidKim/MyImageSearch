@@ -107,6 +107,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             notifyDataSetChanged();
         }
     }
+    //------------------------------------------------------------
+    //
+    public void removeAllData()
+    {
+        if(m_Items != null)
+        {
+            m_Items.clear();
+            notifyDataSetChanged();
+        }
+    }
 
     /*********************** inner class ***********************/
     //-------------------------------------------------------------
