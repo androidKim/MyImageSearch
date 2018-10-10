@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.midas.myimagesearch.MyApp;
 import com.midas.myimagesearch.R;
 import com.midas.myimagesearch.common.Constant;
@@ -68,7 +67,6 @@ public class ActDetail extends AppCompatActivity implements SwipeRefreshLayout.O
     {
         m_tv_LinkUrl = (TextView)findViewById(R.id.tv_LinkUrl);
         m_iv_Item = (PhotoDraweeView)findViewById(R.id.iv_Item);
-        
         settingView();
     }
     //------------------------------------------------------------
