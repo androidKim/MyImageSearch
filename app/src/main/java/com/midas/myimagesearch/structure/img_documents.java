@@ -1,5 +1,7 @@
 package com.midas.myimagesearch.structure;
 
+import android.graphics.Bitmap;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -27,4 +29,19 @@ public class img_documents implements Serializable
     public String doc_url;//문서 URL
     @SerializedName("datetime")
     public String datetime;//문서 작성시간. ISO 8601. [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss].000+[tz]
+
+    public transient Bitmap bitmap = null;
+
+    //-----------------------------------------------------------------------------------
+    //
+    public void setBitmap(Bitmap pInfo)
+    {
+        this.bitmap = pInfo;
+    }
+    //-----------------------------------------------------------------------------------
+    //
+    public Bitmap getBitmap()
+    {
+        return this.bitmap;
+    }
 }

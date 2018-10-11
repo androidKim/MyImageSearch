@@ -64,11 +64,11 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Fresco.initialize(this);//img library
         setContentView(R.layout.act_main);
         m_App = new MyApp(this);
         m_Context = this;
         m_Activity = this;
-        Fresco.initialize(this);//img library
         m_Handler = new Handler();
         initValue();
         recvIntentData();

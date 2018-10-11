@@ -1,7 +1,10 @@
 package com.midas.myimagesearch.ui.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +18,8 @@ import com.midas.myimagesearch.common.Constant;
 import com.midas.myimagesearch.structure.img_documents;
 import com.midas.myimagesearch.ui.act.ActDetail;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>
@@ -43,7 +48,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     {
         // create a new view
         View pView = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_item, parent, false);
-        SimpleDraweeView pSimpleDraweeView= (SimpleDraweeView)pView.findViewById(R.id.iv_Item);
+        SimpleDraweeView pSimpleDraweeView= (SimpleDraweeView) pView.findViewById(R.id.iv_Item);
         ViewHolder vh = new ViewHolder(pView, pSimpleDraweeView);
         return vh;
     }
@@ -60,8 +65,65 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         {
             if(pInfo.image_url.length() > 0)
             {
-                final Uri uri = Uri.parse(pInfo.image_url);
-                holder.iv_Item.setImageURI(uri);
+                new Thread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if(pInfo.getBitmap() != null)
+                        {
+                            Bitmap bitmap = pInfo.getBitmap();
+                            float width = bitmap.getWidth();
+                            float height = bitmap.getHeight();
+                            final float ratio = width / height;
+                            //UIThread..
+                            ((Activity)m_Context).runOnUiThread(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    holder.iv_Item.setImageURI(Uri.parse(pInfo.image_url));
+                                    holder.iv_Item.setAspectRatio(ratio);
+                                    holder.iv_Item.setVisibility(View.VISIBLE);
+                                }
+                            });
+                        }
+                        else
+                        {
+                            try
+                            {
+                                URL url = new URL(pInfo.image_url);
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.inJustDecodeBounds = false;
+                                options.inSampleSize = 4;
+                                Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream(), null ,options);
+                                if(bitmap != null)
+                                {
+                                    pInfo.setBitmap(bitmap);
+
+                                    float width = bitmap.getWidth();
+                                    float height = bitmap.getHeight();
+                                    final float ratio = width / height;
+                                    //UIThread..
+                                    ((Activity)m_Context).runOnUiThread(new Runnable()
+                                    {
+                                        @Override
+                                        public void run()
+                                        {
+                                            holder.iv_Item.setImageURI(Uri.parse(pInfo.image_url));
+                                            holder.iv_Item.setAspectRatio(ratio);
+                                            holder.iv_Item.setVisibility(View.VISIBLE);
+                                        }
+                                    });
+                                }
+                            }
+                            catch(IOException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();
             }
         }
 
