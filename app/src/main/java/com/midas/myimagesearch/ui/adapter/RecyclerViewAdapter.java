@@ -4,14 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.midas.myimagesearch.R;
@@ -54,9 +50,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     //------------------------------------------------------------
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position)
+    public void onBindViewHolder(final ViewHolder holder, int position)
     {
-        img_documents pInfo = m_Items.get(position);
+        final img_documents pInfo = m_Items.get(position);
         if(pInfo == null)
             return;
 
@@ -64,8 +60,70 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         {
             if(pInfo.image_url.length() > 0)
             {
-                Uri uri = Uri.parse(pInfo.image_url);
+                final Uri uri = Uri.parse(pInfo.image_url);
                 holder.iv_Item.setImageURI(uri);
+                /*
+                new Thread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        final Uri uri = Uri.parse(pInfo.image_url);
+
+                        try
+                        {
+                            URL url = new URL(pInfo.image_url);
+                            Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                            float width = bitmap.getWidth();
+                            float height = bitmap.getHeight();
+                            float ratio = width / height;
+                            float adjusted_width = 220 * width / height ;
+                            float adjusted_height = width * height / width ;
+
+                            if(height > width)//세로형..
+                            {
+                                final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                //height setMatchParent
+                                //int newHeight = (int) ((int) (width * ratio)/scale);
+                                params.height = (int)adjusted_height;
+
+                                ((Activity)m_Context).runOnUiThread(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        holder.iv_Item.setImageURI(uri);
+                                        holder.iv_Item.setLayoutParams(params);
+                                        holder.iv_Item.setAdjustViewBounds(true);
+                                        holder.iv_Item.setScaleType(ImageView.ScaleType.FIT_XY);
+
+                                    }
+                                });
+                            }
+                            else//가로형..
+                            {
+                                final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                params.height = (int)adjusted_height;
+                                ((Activity)m_Context).runOnUiThread(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        holder.iv_Item.setImageURI(uri);
+                                        holder.iv_Item.setLayoutParams(params);
+                                        holder.iv_Item.setAdjustViewBounds(true);
+                                        holder.iv_Item.setScaleType(ImageView.ScaleType.FIT_XY);
+                                    }
+                                });
+                            }
+                        }
+                        catch(IOException e)
+                        {
+                            System.out.println(e);
+                        }
+                    }
+                }).start();
+                */
             }
         }
 

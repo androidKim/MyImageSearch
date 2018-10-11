@@ -30,8 +30,6 @@ import com.midas.myimagesearch.ui.adapter.RecyclerViewAdapter;
 import com.midas.myimagesearch.util.NetworkCtrl;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -145,6 +143,12 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
     {
         if(m_strSearchText == null || strValue == null)
             return;
+
+        if(m_strSearchText.equals(""))
+        {
+            initValue();
+            return;
+        }
 
         m_Handler.postDelayed(new Runnable()
         {
@@ -274,6 +278,19 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                     {
                         if(!m_bEnd)//more view
                         {
+                            if(m_strSearchText == null)
+                            {
+                                initValue();
+                                return;
+                            }
+
+                            if(m_strSearchText.equals(""))
+                            {
+                                initValue();
+                                return;
+                            }
+
+
                             getImageListProc();
                         }
                     }
@@ -289,10 +306,15 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
     //
     public void setRefresh()
     {
-        initValue();
-        getImageListProc();
-
         m_SwipeRefresh.setRefreshing(false);
+        initValue();
+        if(m_strSearchText == null)
+            return;
+
+        if(m_strSearchText.equals(""))
+            return;
+
+        getImageListProc();
     }
     /*********************** listener ***********************/
     //------------------------------------------------------------
@@ -339,8 +361,6 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                 m_strSearchText = "";
                 runHandler(m_strSearchText);
             }
-
-
         }
     };
     /*********************** callback ***********************/
