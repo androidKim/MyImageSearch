@@ -65,11 +65,15 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Fresco.initialize(this);//img library
         setContentView(R.layout.act_main);
         m_App = new MyApp(this);
         m_Context = this;
         m_Activity = this;
+<<<<<<< HEAD
 
+=======
+>>>>>>> cd34c22643e909393ed2c59d94a5880ef4d4f0e5
         m_Handler = new Handler();
         initValue();
         recvIntentData();
@@ -144,6 +148,12 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
     {
         if(m_strSearchText == null || strValue == null)
             return;
+
+        if(m_strSearchText.equals(""))
+        {
+            initValue();
+            return;
+        }
 
         m_Handler.postDelayed(new Runnable()
         {
@@ -349,8 +359,25 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                     {
                         if(!m_bEnd)//more view
                         {
+<<<<<<< HEAD
                             if(!m_bRunning)
                                 getImageListProc();
+=======
+                            if(m_strSearchText == null)
+                            {
+                                initValue();
+                                return;
+                            }
+
+                            if(m_strSearchText.equals(""))
+                            {
+                                initValue();
+                                return;
+                            }
+
+
+                            getImageListProc();
+>>>>>>> cd34c22643e909393ed2c59d94a5880ef4d4f0e5
                         }
                     }
                 }
@@ -365,10 +392,15 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
     //
     public void setRefresh()
     {
-        initValue();
-        getImageListProc();
-
         m_SwipeRefresh.setRefreshing(false);
+        initValue();
+        if(m_strSearchText == null)
+            return;
+
+        if(m_strSearchText.equals(""))
+            return;
+
+        getImageListProc();
     }
     /*********************** listener ***********************/
     //------------------------------------------------------------
@@ -415,8 +447,6 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                 m_strSearchText = "";
                 runHandler(m_strSearchText);
             }
-
-
         }
     };
     /*********************** callback ***********************/

@@ -9,9 +9,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+<<<<<<< HEAD
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
+=======
+import com.facebook.drawee.backends.pipeline.Fresco;
+>>>>>>> cd34c22643e909393ed2c59d94a5880ef4d4f0e5
 import com.midas.myimagesearch.MyApp;
 import com.midas.myimagesearch.R;
 import com.midas.myimagesearch.common.Constant;
@@ -66,8 +70,12 @@ public class ActDetail extends AppCompatActivity implements SwipeRefreshLayout.O
     public void initLayout()
     {
         m_tv_LinkUrl = (TextView)findViewById(R.id.tv_LinkUrl);
+<<<<<<< HEAD
         m_iv_Item = (ImageView)findViewById(R.id.iv_Item);
         
+=======
+        m_iv_Item = (PhotoDraweeView)findViewById(R.id.iv_Item);
+>>>>>>> cd34c22643e909393ed2c59d94a5880ef4d4f0e5
         settingView();
     }
     //------------------------------------------------------------
