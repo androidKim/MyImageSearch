@@ -20,9 +20,10 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.midas.myimagesearch.MyApp;
 import com.midas.myimagesearch.R;
+import com.midas.myimagesearch.core.APIClient;
+import com.midas.myimagesearch.core.APIInterface;
 import com.midas.myimagesearch.structure.ReqBase;
 import com.midas.myimagesearch.structure.function.img_list.res_img_list;
 import com.midas.myimagesearch.structure.img_documents;
@@ -30,12 +31,10 @@ import com.midas.myimagesearch.ui.adapter.RecyclerViewAdapter;
 import com.midas.myimagesearch.util.NetworkCtrl;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemSelectedListener
 {
@@ -70,7 +69,7 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
         m_App = new MyApp(this);
         m_Context = this;
         m_Activity = this;
-        Fresco.initialize(this);//img library
+
         m_Handler = new Handler();
         initValue();
         recvIntentData();
@@ -189,6 +188,9 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
             {
                 m_ProgressBar.setVisibility(View.VISIBLE);
                 m_bRunning = true;
+
+                /*
+                single api request..
                 Call<res_img_list> call = m_App.m_APIInterface.getImageListProc(m_strSearchText, m_strSearchType, m_nPageNum, ReqBase.ITEM_COUNT);
                 call.enqueue(new Callback<res_img_list>() {
                     @Override
@@ -218,7 +220,7 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
 
                             }
 
-                            m_nPageNum++;
+                            m_nPageNum ++;
                             settingView(pRes);
                         }
                         else//검색결과가없을때
@@ -245,9 +247,82 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                         m_ProgressBar.setVisibility(View.GONE);
                     }
                 });
+                */
+
+
+                /*
+                Observable<res_img_list> imgResObservable = m_App.m_APIInterface.getImageListProc(m_strSearchText, m_strSearchType, m_nPageNum, ReqBase.ITEM_COUNT)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
+
+                Observable<res_vod_list> vodResObservable = m_App.m_APIInterface.getVodListProc(m_strSearchText, m_strSearchType, m_nPageNum, ReqBase.ITEM_COUNT)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
+                */
+
+
+                /*
+                multiple api request
+                 */
+                Observable.just(APIClient.getClient().create(APIInterface.class)).subscribeOn(Schedulers.computation())
+                        .flatMap(s -> {
+                            Observable<res_img_list> imgResObsaverble
+                                    = s.getImageListProc(m_strSearchText, m_strSearchType, m_nPageNum, ReqBase.ITEM_COUNT).subscribeOn(Schedulers.io());
+
+                            Observable<res_img_list> vodResObsaverble
+                                    = s.getVodListProc(m_strSearchText, m_strSearchType, m_nPageNum, ReqBase.ITEM_COUNT).subscribeOn(Schedulers.io());
+
+                            return Observable.concatArray(imgResObsaverble, vodResObsaverble);
+                        }).observeOn(AndroidSchedulers.mainThread()).subscribe(this::handleResults, this::handleError );
+
+
             }
             return;
         }
+    }
+    private void handleResults(res_img_list pRes){
+        if(pRes == null)
+        {
+            String msg = String.format("[%s]\n%s", m_strSearchText, m_Context.getResources().getString(R.string.network_msg_2));
+            m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
+                    msg);
+
+            initValue();
+            return;
+        }
+
+        if(pRes.meta  != null)
+        {
+            m_bEnd = pRes.meta.is_end;
+
+            if(pRes.meta.total_count <= 0)
+            {
+                String msg = String.format("[%s]\n%s", m_strSearchText, m_Context.getResources().getString(R.string.network_msg_2));
+                m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
+                        msg);
+            }
+            else if(pRes.meta.is_end)
+            {
+                String msg = String.format("[%s]\n%s", m_strSearchText, m_Context.getResources().getString(R.string.network_msg_3));
+                m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
+                        msg);
+            }
+
+        }
+
+        m_bRunning = false;
+        m_ProgressBar.setVisibility(View.GONE);
+        m_nPageNum ++;
+        settingView(pRes);
+    }
+
+    private void handleError(Throwable t){
+        m_bRunning = false;
+
+        m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
+                m_Context.getResources().getString(R.string.network_msg_4));
+
+        m_ProgressBar.setVisibility(View.GONE);
     }
     //------------------------------------------------------------
     //
@@ -274,7 +349,8 @@ public class ActMain extends AppCompatActivity implements SwipeRefreshLayout.OnR
                     {
                         if(!m_bEnd)//more view
                         {
-                            getImageListProc();
+                            if(!m_bRunning)
+                                getImageListProc();
                         }
                     }
                 }

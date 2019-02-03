@@ -2,32 +2,31 @@ package com.midas.myimagesearch.ui.act;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.RequestManager;
 import com.midas.myimagesearch.MyApp;
 import com.midas.myimagesearch.R;
 import com.midas.myimagesearch.common.Constant;
 import com.midas.myimagesearch.structure.img_documents;
-
-import me.relex.photodraweeview.PhotoDraweeView;
-
 public class ActDetail extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener
 {
     /********************* Define *********************/
     /********************* Member *********************/
     public MyApp m_App = null;
     public Context m_Context = null;
+    public RequestManager m_RequestManager = null;
     public img_documents m_ImageInfo = null;
     /********************* Controller *********************/
     public TextView m_tv_LinkUrl = null;
-    public PhotoDraweeView m_iv_Item = null;
+    public ImageView m_iv_Item = null;
     /********************* System Function *********************/
     //------------------------------------------------------------
     //
@@ -38,7 +37,7 @@ public class ActDetail extends AppCompatActivity implements SwipeRefreshLayout.O
         setContentView(R.layout.act_detail);
         m_App = new MyApp(this);
         m_Context = this;
-        Fresco.initialize(this);//img library
+        m_RequestManager = Glide.with(m_Context);
 
         initValue();
         recvIntentData();
@@ -67,7 +66,7 @@ public class ActDetail extends AppCompatActivity implements SwipeRefreshLayout.O
     public void initLayout()
     {
         m_tv_LinkUrl = (TextView)findViewById(R.id.tv_LinkUrl);
-        m_iv_Item = (PhotoDraweeView)findViewById(R.id.iv_Item);
+        m_iv_Item = (ImageView)findViewById(R.id.iv_Item);
         
         settingView();
     }
@@ -92,8 +91,8 @@ public class ActDetail extends AppCompatActivity implements SwipeRefreshLayout.O
         {
             if(m_ImageInfo.image_url.length() > 0)
             {
-                Uri uri = Uri.parse(m_ImageInfo.image_url);
-                m_iv_Item.setPhotoUri(uri);
+                RequestBuilder requestBuilder = m_RequestManager.load(m_ImageInfo.image_url);
+                requestBuilder.into(m_iv_Item);
             }
             m_iv_Item.setVisibility(View.VISIBLE);
         }

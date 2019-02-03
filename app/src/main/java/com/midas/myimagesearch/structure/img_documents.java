@@ -10,7 +10,7 @@ public class img_documents implements Serializable
     {
 
     }
-
+    //img list
     @SerializedName("collection")
     public String collection;//컬렉션
     @SerializedName("thumbnail_url")
@@ -27,4 +27,16 @@ public class img_documents implements Serializable
     public String doc_url;//문서 URL
     @SerializedName("datetime")
     public String datetime;//문서 작성시간. ISO 8601. [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss].000+[tz]
+
+    //vod list
+    @SerializedName("title")
+    public String title;//동영상 제목
+    @SerializedName("url")
+    public String url;//동영상 링크
+    @SerializedName("play_time")
+    public String play_time;//동영상 재생시간
+    @SerializedName("thumbnail")
+    public String thumbnail;//동영상 썸네일 url
+    @SerializedName("author")
+    public String author;//동영상 업로더
 }

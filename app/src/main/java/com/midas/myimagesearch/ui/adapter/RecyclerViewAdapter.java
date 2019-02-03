@@ -13,7 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.RequestManager;
+
 import com.midas.myimagesearch.R;
 import com.midas.myimagesearch.common.Constant;
 import com.midas.myimagesearch.structure.img_documents;
@@ -27,6 +30,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     /*********************** member ***********************/
     private Context m_Context = null;
     private ArrayList<img_documents> m_Items;    // 아이템 리스트
+    private RequestManager m_RequestManager = null;//glide request manager
 
     /*********************** controler ***********************/
 
@@ -38,6 +42,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     {
         m_Context = pContext;
         m_Items = pArray;
+        m_RequestManager = Glide.with(m_Context);
     }
     /*********************** system function ***********************/
     //------------------------------------------------------------
@@ -47,8 +52,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     {
         // create a new view
         View pView = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_item, parent, false);
-        SimpleDraweeView pSimpleDraweeView= (SimpleDraweeView)pView.findViewById(R.id.iv_Item);
-        ViewHolder vh = new ViewHolder(pView, pSimpleDraweeView);
+        ImageView pImageView= (ImageView)pView.findViewById(R.id.iv_Item);
+        ViewHolder vh = new ViewHolder(pView, pImageView);
         return vh;
     }
     //------------------------------------------------------------
@@ -64,8 +69,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         {
             if(pInfo.image_url.length() > 0)
             {
-                Uri uri = Uri.parse(pInfo.image_url);
-                holder.iv_Item.setImageURI(uri);
+                RequestBuilder requestBuilder = m_RequestManager.load(pInfo.image_url);
+                requestBuilder.into(holder.iv_Item);
             }
         }
 
@@ -104,7 +109,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         if(pArray != null)
         {
             m_Items.addAll(pArray);
-            notifyDataSetChanged();
         }
     }
     //------------------------------------------------------------
@@ -125,12 +129,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     {
         // each data item is just a string in this case
         public View v_Row;
-        public SimpleDraweeView iv_Item;
-        public ViewHolder(View pView, SimpleDraweeView pSimpleDraweeView)
+        public ImageView iv_Item;
+        public ViewHolder(View pView, ImageView pImageView)
         {
             super(pView);
             v_Row = pView;
-            iv_Item = pSimpleDraweeView;
+            iv_Item = pImageView;
         }
     }
 }
