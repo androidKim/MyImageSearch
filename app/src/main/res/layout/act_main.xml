@@ -6,54 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".ui.act.ActMain">
 
-
-    <LinearLayout
-        android:id="@+id/ly_Top"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        >
 
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></Spinner>
-
-        <EditText
-            android:maxLength="100"
-            android:maxLines="1"
-            android:inputType="text"
-            android:id="@+id/edit_Search"
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="left|center"
-            android:hint="@string/str_msg_1"
-            android:padding="10dp"
-            android:textColorHint="@color/cBBBBBB" />
+            android:layout_height="wrap_content">
 
-    </LinearLayout>
+        </android.support.design.widget.TabLayout>
 
-
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/ly_SwipeRefresh"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/ly_Top">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewPager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+            android:layout_height="match_parent"
+            android:layout_below="@+id/tabLayout">
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+        </android.support.v4.view.ViewPager>
+    </RelativeLayout>
 
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

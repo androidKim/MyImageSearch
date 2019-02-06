@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.midas.myimagesearch.core.APIClient;
 import com.midas.myimagesearch.core.APIInterface;
+import com.midas.myimagesearch.core.SharedPrefCtrl;
 import com.midas.myimagesearch.util.NetworkCtrl;
 
 import java.security.MessageDigest;
@@ -27,6 +28,7 @@ public class MyApp extends Application
 
     /******************** Member ********************/
     public APIInterface m_APIInterface = null;
+    public SharedPrefCtrl m_SpCtrl = null;
     public NetworkCtrl m_NetworkCtrl = null;
     public boolean m_bInit = false;
     /******************** Cotroller ********************/
@@ -50,6 +52,7 @@ public class MyApp extends Application
             //getKeyHash(pContext);
 
             m_APIInterface = APIClient.getClient().create(APIInterface.class);//web request ctrl
+            m_SpCtrl = new SharedPrefCtrl(pContext);
             m_NetworkCtrl = new NetworkCtrl(pContext);
             m_bInit = true;
         }

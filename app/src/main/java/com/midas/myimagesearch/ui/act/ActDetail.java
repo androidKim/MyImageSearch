@@ -9,13 +9,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-<<<<<<< HEAD
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
-=======
-import com.facebook.drawee.backends.pipeline.Fresco;
->>>>>>> cd34c22643e909393ed2c59d94a5880ef4d4f0e5
 import com.midas.myimagesearch.MyApp;
 import com.midas.myimagesearch.R;
 import com.midas.myimagesearch.common.Constant;
@@ -24,13 +21,13 @@ public class ActDetail extends AppCompatActivity implements SwipeRefreshLayout.O
 {
     /********************* Define *********************/
     /********************* Member *********************/
-    public MyApp m_App = null;
-    public Context m_Context = null;
-    public RequestManager m_RequestManager = null;
-    public img_documents m_ImageInfo = null;
+    private MyApp m_App = null;
+    private Context m_Context = null;
+    private RequestManager m_RequestManager = null;
+    private img_documents m_ImageInfo = null;
     /********************* Controller *********************/
-    public TextView m_tv_LinkUrl = null;
-    public ImageView m_iv_Item = null;
+    private TextView m_tv_LinkUrl = null;
+    private ImageView m_iv_Item = null;
     /********************* System Function *********************/
     //------------------------------------------------------------
     //
@@ -70,12 +67,7 @@ public class ActDetail extends AppCompatActivity implements SwipeRefreshLayout.O
     public void initLayout()
     {
         m_tv_LinkUrl = (TextView)findViewById(R.id.tv_LinkUrl);
-<<<<<<< HEAD
         m_iv_Item = (ImageView)findViewById(R.id.iv_Item);
-        
-=======
-        m_iv_Item = (PhotoDraweeView)findViewById(R.id.iv_Item);
->>>>>>> cd34c22643e909393ed2c59d94a5880ef4d4f0e5
         settingView();
     }
     //------------------------------------------------------------
@@ -95,11 +87,20 @@ public class ActDetail extends AppCompatActivity implements SwipeRefreshLayout.O
             m_tv_LinkUrl.setVisibility(View.GONE);
         }
 
-        if(m_ImageInfo.image_url != null)
+        if(m_ImageInfo.thumbnail_url != null)//이미지 검색 결과
         {
-            if(m_ImageInfo.image_url.length() > 0)
+            if(m_ImageInfo.thumbnail_url.length() > 0)
             {
-                RequestBuilder requestBuilder = m_RequestManager.load(m_ImageInfo.image_url);
+                RequestBuilder requestBuilder = m_RequestManager.load(m_ImageInfo.thumbnail_url);
+                requestBuilder.into(m_iv_Item);
+            }
+            m_iv_Item.setVisibility(View.VISIBLE);
+        }
+        else if(m_ImageInfo.thumbnail != null)//동영상검색결과
+        {
+            if(m_ImageInfo.thumbnail.length() > 0)
+            {
+                RequestBuilder requestBuilder = m_RequestManager.load(m_ImageInfo.thumbnail);
                 requestBuilder.into(m_iv_Item);
             }
             m_iv_Item.setVisibility(View.VISIBLE);

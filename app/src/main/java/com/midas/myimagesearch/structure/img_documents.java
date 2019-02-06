@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class img_documents implements Serializable
 {
@@ -30,7 +32,7 @@ public class img_documents implements Serializable
     @SerializedName("datetime")
     public String datetime;//문서 작성시간. ISO 8601. [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss].000+[tz]
 
-<<<<<<< HEAD
+
     //vod list
     @SerializedName("title")
     public String title;//동영상 제목
@@ -42,20 +44,26 @@ public class img_documents implements Serializable
     public String thumbnail;//동영상 썸네일 url
     @SerializedName("author")
     public String author;//동영상 업로더
-=======
-    public transient Bitmap bitmap = null;
 
-    //-----------------------------------------------------------------------------------
-    //
-    public void setBitmap(Bitmap pInfo)
+
+    public long getDateTime()
     {
-        this.bitmap = pInfo;
+        if(datetime == null)
+            return 0;
+
+        String date = datetime.split("\\+")[0];//ex 2016-09-23T14:32:02.000+09:00
+        date = date.replace("T", " ");
+        try
+        {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+            Date parsedDate = dateFormat.parse(date);
+            long timestamp = parsedDate.getTime();
+            return timestamp;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return 0;
+        }
     }
-    //-----------------------------------------------------------------------------------
-    //
-    public Bitmap getBitmap()
-    {
-        return this.bitmap;
-    }
->>>>>>> cd34c22643e909393ed2c59d94a5880ef4d4f0e5
 }

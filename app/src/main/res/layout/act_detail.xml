@@ -20,10 +20,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-<<<<<<< HEAD
-=======
-        android:scaleType="centerCrop"
->>>>>>> cd34c22643e909393ed2c59d94a5880ef4d4f0e5
         android:visibility="gone" />
 
 </android.support.constraint.ConstraintLayout>

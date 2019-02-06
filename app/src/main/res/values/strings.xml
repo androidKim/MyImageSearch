@@ -2,6 +2,7 @@
     <string name="app_name">MyImageSearch</string>
     <string name="kakao_app_key">2aea573eeae8ac8224e16756e4e0f276</string>
     <string name="str_msg_1">검색어를 입력하세요.</string>
+    <string name="str_msg_2">이미지가 보관함에 저장되었습니다.</string>
     <string name="msg_ok">확인</string>
     <string name="msg_cancel">취소</string>
     <string name="network_msg_1">조회결과</string>
@@ -10,7 +11,8 @@
     <string name="network_msg_4">검색에 실패하였습니다. 잠시 후 다시 시도해주세요.</string>
     <string name="network_msg_5">네트워크에 연결할 수 없습니다. 와이파이 및 셀룰러 상태 확인 후 다시 시도해주세요.</string>
 
-
+    <string name="frag_search">검색</string>
+    <string name="frag_storage">보관함</string>
     <string-array name="search_type_array">
         <item>최근순</item>
         <item>정확도순</item>

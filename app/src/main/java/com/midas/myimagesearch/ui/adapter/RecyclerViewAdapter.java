@@ -1,37 +1,45 @@
 package com.midas.myimagesearch.ui.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
 
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.midas.myimagesearch.MyApp;
 import com.midas.myimagesearch.R;
 import com.midas.myimagesearch.common.Constant;
 import com.midas.myimagesearch.structure.img_documents;
 import com.midas.myimagesearch.ui.act.ActDetail;
 
-import java.io.IOException;
-import java.net.URL;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>
 {
     /*********************** define ***********************/
     /*********************** member ***********************/
+    private MyApp m_App = null;
     private Context m_Context = null;
     private ArrayList<img_documents> m_Items;    // 아이템 리스트
     private RequestManager m_RequestManager = null;//glide request manager
+    private IfCallback m_IfCallback = null;
 
     /*********************** controler ***********************/
 
@@ -39,11 +47,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     /*********************** constructor ***********************/
     //------------------------------------------------------------
     // Provide a suitable constructor (depends on the kind of dataset)
-    public RecyclerViewAdapter(Context pContext, ArrayList<img_documents> pArray)
+    public RecyclerViewAdapter(MyApp myApp, Context pContext, ArrayList<img_documents> pArray, IfCallback pCallback)
     {
+        m_App = myApp;
         m_Context = pContext;
         m_Items = pArray;
         m_RequestManager = Glide.with(m_Context);
+        m_IfCallback = pCallback;
     }
     /*********************** system function ***********************/
     //------------------------------------------------------------
@@ -53,13 +63,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     {
         // create a new view
         View pView = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_item, parent, false);
-<<<<<<< HEAD
         ImageView pImageView= (ImageView)pView.findViewById(R.id.iv_Item);
-        ViewHolder vh = new ViewHolder(pView, pImageView);
-=======
-        SimpleDraweeView pSimpleDraweeView= (SimpleDraweeView) pView.findViewById(R.id.iv_Item);
-        ViewHolder vh = new ViewHolder(pView, pSimpleDraweeView);
->>>>>>> cd34c22643e909393ed2c59d94a5880ef4d4f0e5
+        LinearLayout pLinearLayout = (LinearLayout)pView.findViewById(R.id.ly_Save);
+        ViewHolder vh = new ViewHolder(pView, pImageView, pLinearLayout);
         return vh;
     }
     //------------------------------------------------------------
@@ -71,74 +77,41 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         if(pInfo == null)
             return;
 
-        if(pInfo.image_url != null)
+        holder.ly_Save.setVisibility(View.GONE);
+        if(pInfo.thumbnail_url != null)//이미지검색결과..
         {
-            if(pInfo.image_url.length() > 0)
+            if(pInfo.thumbnail_url.length() > 0)
             {
-<<<<<<< HEAD
-                RequestBuilder requestBuilder = m_RequestManager.load(pInfo.image_url);
-                requestBuilder.into(holder.iv_Item);
-=======
-                new Thread(new Runnable()
-                {
+                m_RequestManager.load(pInfo.thumbnail_url).listener(new RequestListener<Drawable>() {
                     @Override
-                    public void run()
-                    {
-                        if(pInfo.getBitmap() != null)
-                        {
-                            Bitmap bitmap = pInfo.getBitmap();
-                            float width = bitmap.getWidth();
-                            float height = bitmap.getHeight();
-                            final float ratio = width / height;
-                            //UIThread..
-                            ((Activity)m_Context).runOnUiThread(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    holder.iv_Item.setImageURI(Uri.parse(pInfo.image_url));
-                                    holder.iv_Item.setAspectRatio(ratio);
-                                    holder.iv_Item.setVisibility(View.VISIBLE);
-                                }
-                            });
-                        }
-                        else
-                        {
-                            try
-                            {
-                                URL url = new URL(pInfo.image_url);
-                                BitmapFactory.Options options = new BitmapFactory.Options();
-                                options.inJustDecodeBounds = false;
-                                options.inSampleSize = 4;
-                                Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream(), null ,options);
-                                if(bitmap != null)
-                                {
-                                    pInfo.setBitmap(bitmap);
-
-                                    float width = bitmap.getWidth();
-                                    float height = bitmap.getHeight();
-                                    final float ratio = width / height;
-                                    //UIThread..
-                                    ((Activity)m_Context).runOnUiThread(new Runnable()
-                                    {
-                                        @Override
-                                        public void run()
-                                        {
-                                            holder.iv_Item.setImageURI(Uri.parse(pInfo.image_url));
-                                            holder.iv_Item.setAspectRatio(ratio);
-                                            holder.iv_Item.setVisibility(View.VISIBLE);
-                                        }
-                                    });
-                                }
-                            }
-                            catch(IOException e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
                     }
-                }).start();
->>>>>>> cd34c22643e909393ed2c59d94a5880ef4d4f0e5
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        holder.ly_Save.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+                }).into(holder.iv_Item);
+            }
+        }
+        else if(pInfo.thumbnail != null)//동영상검색결과
+        {
+            if(pInfo.thumbnail.length() > 0)
+            {
+                m_RequestManager.load(pInfo.thumbnail).listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        holder.ly_Save.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+                }).into(holder.iv_Item);
             }
         }
 
@@ -160,6 +133,45 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 m_Context.startActivity(pIntent);
             }
         });
+
+        //
+        holder.ly_Save.setTag(pInfo);
+        holder.ly_Save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                img_documents pInfo = (img_documents) view.getTag();
+                if(pInfo == null)
+                    return;
+
+                //get Current Data..
+                String strCurrentData = m_App.m_SpCtrl.getImageUrlJsonData();
+                try {
+                    JSONArray jsonArray = null;
+                    if(strCurrentData.length() > 0)
+                        jsonArray = new JSONArray(strCurrentData);
+                    else
+                        jsonArray = new JSONArray();
+
+                    JSONObject jsonObj = new JSONObject();
+                    if(pInfo.thumbnail_url != null)
+                        jsonObj.put("url", pInfo.thumbnail_url);
+                    else if(pInfo.thumbnail != null)
+                        jsonObj.put("url", pInfo.thumbnail);
+
+                    jsonArray.put(jsonObj);
+
+                    m_App.m_SpCtrl.setImageUrlJsonData(jsonArray.toString());
+                    Toast.makeText(m_Context, m_Context.getResources().getString(R.string.str_msg_2), Toast.LENGTH_SHORT).show();
+
+                    if(m_IfCallback != null)
+                        m_IfCallback.notifyAddData(jsonObj);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
     //------------------------------------------------------------
     // Return the size of your dataset (invoked by the layout manager)
@@ -177,6 +189,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         if(pArray != null)
         {
             m_Items.addAll(pArray);
+            notifyDataSetChanged();
         }
     }
     //------------------------------------------------------------
@@ -198,11 +211,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         // each data item is just a string in this case
         public View v_Row;
         public ImageView iv_Item;
-        public ViewHolder(View pView, ImageView pImageView)
+        public LinearLayout ly_Save;
+        public ViewHolder(View pView, ImageView pImageView, LinearLayout pLinearLayout)
         {
             super(pView);
             v_Row = pView;
             iv_Item = pImageView;
+            ly_Save = pLinearLayout;
         }
+    }
+
+    /*********************** interface ***********************/
+    //-------------------------------------------------------------
+    //
+    public interface IfCallback
+    {
+        void notifyAddData(JSONObject pObj);
     }
 }
