@@ -6,20 +6,49 @@
     android:layout_height="match_parent"
     tools:context=".ui.act.ActDetail">
 
-    <TextView
-        android:id="@+id/tv_LinkUrl"
+    <LinearLayout
+        android:id="@+id/ly_ImageContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:autoLink="web"
-        android:padding="5dp"
-        android:visibility="gone" />
+        android:orientation="vertical"
+        android:visibility="gone">
 
-    <ImageView
-        app:layout_constraintTop_toBottomOf="@id/tv_LinkUrl"
-        android:id="@+id/iv_Item"
+        <TextView
+            android:id="@+id/tv_LinkUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:padding="5dp" />
+
+        <ImageView
+            android:id="@+id/iv_Image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:adjustViewBounds="true" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ly_VideoContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:visibility="gone" />
+        android:orientation="vertical"
+        android:visibility="gone">
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+
+            <ImageView
+                android:id="@+id/iv_Video"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/baseline_play_circle_outline_white_48" />
+        </FrameLayout>
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

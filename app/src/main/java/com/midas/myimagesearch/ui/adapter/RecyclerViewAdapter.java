@@ -189,7 +189,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         if(pArray != null)
         {
             m_Items.addAll(pArray);
-            notifyDataSetChanged();
+            notifyItemRangeInserted(m_Items.size()-1, pArray.size());
         }
     }
     //------------------------------------------------------------

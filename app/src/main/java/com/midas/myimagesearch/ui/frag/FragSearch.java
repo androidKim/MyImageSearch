@@ -257,16 +257,6 @@ public class FragSearch extends Fragment implements SwipeRefreshLayout.OnRefresh
     private void handleResults(res_img_list pRes){
         m_nReqCount++;
 
-        /*
-        if(pRes == null)
-        {
-            String msg = String.format("[%s]\n%s", m_strSearchText, m_Context.getResources().getString(R.string.network_msg_2));
-            m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1), msg);
-
-            initValue();
-            return;
-        }
-        */
 
         if(pRes.meta  != null)
         {
@@ -294,20 +284,6 @@ public class FragSearch extends Fragment implements SwipeRefreshLayout.OnRefresh
                         msg);
             }
 
-            /*
-            if(pRes.meta.total_count <= 0)
-            {
-                String msg = String.format("[%s]\n%s", m_strSearchText, m_Context.getResources().getString(R.string.network_msg_2));
-                m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
-                        msg);
-            }
-            else if(pRes.meta.is_end)
-            {
-                String msg = String.format("[%s]\n%s", m_strSearchText, m_Context.getResources().getString(R.string.network_msg_3));
-                m_App.showMessageDlg(m_Context, m_Context.getResources().getString(R.string.network_msg_1),
-                        msg);
-            }
-            */
 
         }
 

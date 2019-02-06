@@ -112,7 +112,7 @@ public class StorageViewAdapter extends RecyclerView.Adapter<StorageViewAdapter.
         if(jsonObj != null)
         {
             m_Items.put(jsonObj);
-            notifyDataSetChanged();
+            notifyItemRangeInserted(m_Items.length()-1, 1);
         }
     }
     //------------------------------------------------------------

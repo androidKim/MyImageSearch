@@ -95,7 +95,7 @@ public class FragStorage extends Fragment
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         m_RecyclerView.setLayoutManager(layoutManager);
 
-        JSONArray pArray = null;
+        JSONArray pArray = new JSONArray();
         String strSavedData = m_App.m_SpCtrl.getImageUrlJsonData();
         if(strSavedData.length() > 0)
         {
@@ -104,10 +104,9 @@ public class FragStorage extends Fragment
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-            m_Adapter = new StorageViewAdapter(m_App, m_Context, pArray);
-            m_RecyclerView.setAdapter(m_Adapter);
         }
+        m_Adapter = new StorageViewAdapter(m_App, m_Context, pArray);
+        m_RecyclerView.setAdapter(m_Adapter);
     }
 
     //------------------------------------------------------------
@@ -116,7 +115,12 @@ public class FragStorage extends Fragment
     {
         if(jsonObj != null)
         {
-            m_Adapter.addData(jsonObj);
+            if(m_Adapter != null)
+            {
+                m_Adapter.addData(jsonObj);
+                if(m_RecyclerView != null)
+                    m_RecyclerView.smoothScrollToPosition(m_Adapter.getItemCount() - 1);
+            }
         }
     }
 

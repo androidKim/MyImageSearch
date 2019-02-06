@@ -1,13 +1,12 @@
 package com.midas.myimagesearch.structure.function.img_list;
 
-import com.midas.myimagesearch.structure.image;
 import com.midas.myimagesearch.structure.img_documents;
 import com.midas.myimagesearch.structure.img_meta;
 
 import java.util.ArrayList;
 
 /*
-kakao image list resonse structure
+kakao thumnail resonse structure
  */
 public class res_img_list
 {
